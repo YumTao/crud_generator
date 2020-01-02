@@ -1,0 +1,58 @@
+package ${package}.${moduleName}.service.impl;
+
+import java.util.List;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.PageHelper;
+import tk.mybatis.mapper.entity.Example;
+import ${package}.${moduleName}.entity.${className}Entity;
+
+
+import ${package}.${moduleName}.dao.${className}Dao;
+import ${package}.${moduleName}.entity.${className}Entity;
+import ${package}.${moduleName}.service.${className}Service;
+import ${package}.${moduleName}.param.req.${className}PageRequest;
+
+
+@Service("${classname}Service")
+public class ${className}ServiceImpl implements ${className}Service {
+
+    @Autowired
+    private ${className}Dao ${classname}Dao;
+
+    @Override
+    public PageInfo<${className}Entity> queryPage(${className}PageRequest params) {
+        PageHelper.startPage(params.getCurrentPage(), params.getPageSize());
+
+        ${className}Entity query = new ${className}Entity();
+        BeanUtils.copyProperties(params, query);
+        List<${className}Entity> pageResult = ${classname}Dao.select(query);
+
+        return new PageInfo<>(pageResult);
+    }
+
+    @Override
+    public ${className}Entity getById(${pk.attrType} id) {
+       return ${classname}Dao.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public void save(${className}Entity param) {
+        ${classname}Dao.insertSelective(param);
+    }
+
+    @Override
+    public void updateById(${className}Entity param) {
+        ${classname}Dao.updateByPrimaryKeySelective(param);
+    }
+
+    @Override
+    public void removeByIds(List<${pk.attrType}> ids) {
+        Example example = new Example(${className}Entity.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("${pk.attrname}", ids);
+        ${classname}Dao.deleteByExample(example);
+    }
+}

@@ -1,0 +1,27 @@
+package ${package}.${moduleName}.service;
+
+import java.util.List;
+import com.github.pagehelper.PageInfo;
+import ${package}.${moduleName}.entity.${className}Entity;
+import ${package}.${moduleName}.param.req.${className}PageRequest;
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service {
+
+    PageInfo<${className}Entity> queryPage(${className}PageRequest params);
+
+    ${className}Entity getById(${pk.attrType} id);
+
+    void save(${className}Entity param);
+
+    void updateById(${className}Entity param);
+
+    void removeByIds(List<${pk.attrType}> ids);
+}
+
