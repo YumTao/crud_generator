@@ -5,9 +5,17 @@
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
 #foreach($column in $columns)
-#if($column.columnName != $pk.columnName)
+#if($column.columnName != $pk.columnName && $column.columnName != "create_time" && $column.columnName != "update_time")
     <el-form-item label="${column.comments}" prop="${column.attrname}">
-      <el-input v-model="dataForm.${column.attrname}" placeholder="${column.comments}"></el-input>
+#if($column.attrType == "Date")
+        <el-date-picker v-model="dataForm.${column.attrname}" type="datetime" placeholder="${column.comments}" yumtao-attrType="${column.attrType}" yumtao-attrName="${column.columnName}"/>
+#elseif($column.attrType == "Integer")
+        <el-select v-model="dataForm.${column.attrname}" class="filter-item" placeholder="${column.comments}">
+            <el-option v-for="item in this.$parent.${column.attrname}Arr" :key="item.value" :label="item.label" :value="item.value"/>
+        </el-select>
+#else
+        <el-input v-model="dataForm.${column.attrname}" placeholder="${column.comments}" yumtao-attrType="${column.attrType}" yumtao-attrName="${column.columnName}"></el-input>
+#end
     </el-form-item>
 #end
 #end
@@ -60,20 +68,6 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.${pk.attrname}) {
-##             this.$http({
-##               url: #[[this.$http.adornUrl]]#(`/api/${pathName}/info/#[[$]]#{this.dataForm.${pk.attrname}}`),
-##               method: 'get',
-##               #[[params: this.$http.adornParams()]]#
-##             }).then(({data}) => {
-##               if (data && data.code === 0) {
-## #foreach($column in $columns)
-## #if($column.columnName != $pk.columnName)
-##                 this.dataForm.${column.attrname} = data.${classname}.${column.attrname}
-## #end
-## #end
-##               }
-##             })
-
               const request = {}
               request.${pk.attrname} = this.dataForm.${pk.attrname}
               console.log('getInfo request', request)
@@ -83,13 +77,9 @@
                   data = eval('(' + data + ')')
 #foreach($column in $columns)
 #if($column.columnName != $pk.columnName)
-  this.dataForm.${column.attrname} = data.${column.attrname}
+                  this.dataForm.${column.attrname} = data.${column.attrname}
 #end
 #end
-                  setTimeout(() => {
-                    this.dataListLoading = false
-                  }, 1.5 * 1000)
-
                 })
            }
         })
@@ -101,24 +91,26 @@
               if (this.dataForm.${pk.attrname}) {
                   console.log('update request', this.dataForm)
                   update(this.dataForm).then(() => {
+                      this.visible = false
                       this.$notify({
                           title: 'Success',
                           message: 'Save Successfully',
                           type: 'success',
                           duration: 2000
                       })
-                      this.getDataList()
+                      this.$parent.getDataList()
                   })
               } else {
                   console.log('save request', this.dataForm)
                   save(this.dataForm).then(() => {
+                      this.visible = false
                       this.$notify({
                           title: 'Success',
                           message: 'Save Successfully',
                           type: 'success',
                           duration: 2000
                       })
-                      this.getDataList()
+                      this.$parent.getDataList()
                   })
               }
           }

@@ -1,14 +1,28 @@
 <template>
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-      <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
-        <el-button type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
-      </el-form-item>
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName && $column.columnName != "create_time" && $column.columnName != "update_time")
+     <el-form-item>
+#if($column.attrType == "String")
+      <el-input v-model="dataForm.$column.attrname" placeholder="$column.comments" clearable></el-input>
+#elseif($column.attrType == "Integer")
+      <el-select v-model="dataForm.$column.attrname" placeholder="$column.comments">
+       <el-option v-for="item in ${column.attrname}Arr" :key="item.value" :label="item.label" :value="item.value"/>
+      </el-select>
+#else
+#end
+     </el-form-item>
+#end
+#end
+     <el-form-item>
+      <el-button type="primary" @click="resetQuery()">重置条件</el-button>
+     </el-form-item>
+     <el-form-item>
+      <el-button @click="getDataList()">查询</el-button>
+      <el-button type="primary" @click="addOrUpdateHandle()">新增</el-button>
+      <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+     </el-form-item>
     </el-form>
     <el-table
       :data="dataList"
@@ -23,11 +37,17 @@
         width="50">
       </el-table-column>
 #foreach($column in $columns)
-      <el-table-column
-        prop="${column.attrname}"
-        header-align="center"
-        align="center"
-        label="${column.comments}">
+      <el-table-column prop="${column.attrname}" header-align="center" align="center" label="${column.comments}">
+#if($column.attrType == "Date")
+        <template slot-scope="scope">
+          <span>{{ scope.row.${column.attrname} | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+#elseif($column.attrType == "Integer")
+        <template slot-scope="scope">
+            <span>{{ scope.row.${column.attrname} | getLabel(${column.attrname}Arr) }}</span>
+        </template>
+#else
+#end
       </el-table-column>
 #end
       <el-table-column
@@ -64,13 +84,18 @@
     update,
     deleteFun
   } from '@/api/${pathName}'
+  import { parseTime, getLabel } from '@/utils'
   import AddOrUpdate from './${pathName}-add-or-update'
   export default {
     data() {
       return {
-        dataForm: {
-          key: ''
-        },
+#foreach($column in $columns)
+#if($column.attrType == "Integer")
+        ${column.attrname}Arr: [{ label: '显示内容', value: 1 }],
+#else
+#end
+#end
+        dataForm: {},
         dataList: [],
         pageIndex: 1,
         pageSize: 10,
@@ -87,24 +112,26 @@
       this.getDataList()
     },
     methods: {
+      // 查询条件重置
+      resetQuery() {
+          this.dataForm = {}
+      },
       // 获取数据列表
       getDataList() {
         this.dataListLoading = true
-        const pageRequest = {}
-        pageRequest.currentPage = this.pageIndex
-        pageRequest.pageSize = this.pageSize
-
-        console.log('fetch goods list request', pageRequest)
-        fetchList(pageRequest).then(response => {
+        this.dataForm.currentPage = this.pageIndex
+        this.dataForm.pageSize = this.pageSize
+        console.log('fetch goods list request', this.dataForm)
+        fetchList(this.dataForm).then(response => {
           var data = response.data
           /* eslint-disable */
           data = eval('(' + data + ')')
           this.dataList = data.list
           this.totalPage = data.total
           setTimeout(() => {
-          this.dataListLoading = false
-        }, 1.5 * 1000)
-      })
+            this.dataListLoading = false
+          }, 1.5 * 1000)
+        })
       },
       // 每页数
       sizeChangeHandle(val) {
