@@ -7,7 +7,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     #MySQL配置
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://120.79.48.63:3306/generator?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://120.79.48.63:3306/exam_test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: yumtao
     password: Tao252525
     #oracle配置

@@ -1,7 +1,7 @@
 package ${package}.${moduleName}.dao;
 
 import ${package}.${moduleName}.entity.${className}Entity;
-import ${package}.${moduleName}.dao.base.IBaseMapper;
+import ${package}.${moduleName}.db.mapper.base.IBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

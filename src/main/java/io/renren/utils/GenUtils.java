@@ -31,7 +31,6 @@ public class GenUtils {
     public static List<String> getTemplates(){
         List<String> templates = new ArrayList<String>();
         templates.add("template/Entity.java.vm");
-        templates.add("template/IBaseMapper.java.vm");
         templates.add("template/Dao.java.vm");
         templates.add("template/Dao.xml.vm");
         templates.add("template/Service.java.vm");
@@ -42,7 +41,6 @@ public class GenUtils {
         templates.add("template/index.vue.vm");
         templates.add("template/add-or-update.vue.vm");
         templates.add("template/PageRequest.java.vm");
-        templates.add("template/PageDTO.java.vm");
         templates.add("template/index.js.vm");
 
         return templates;
@@ -187,20 +185,12 @@ public class GenUtils {
             return packagePath + "param" + File.separator + "req" + File.separator + className + "PageRequest.java";
         }
 
-        if (template.contains("PageDTO.java.vm" )) {
-            return packagePath + "param" + File.separator + "base" + File.separator + "PageDTO.java";
-        }
-
         if (template.contains("Entity.java.vm" )) {
             return packagePath + "entity" + File.separator + className + "Entity.java";
         }
 
         if (template.contains("Dao.java.vm" )) {
             return packagePath + "dao" + File.separator + className + "Dao.java";
-        }
-
-        if (template.contains("IBaseMapper.java.vm" )) {
-            return packagePath + "dao" + File.separator + "base" + File.separator + "IBaseMapper.java";
         }
 
         if (template.contains("Service.java.vm" )) {

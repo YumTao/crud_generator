@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 #end
 import java.util.Date;
 import lombok.Data;
-import ${package}.${moduleName}.param.base.PageDTO;
+import ${package}.${moduleName}.model.common.PageDTO;
 
 /**
  * ${comments}
